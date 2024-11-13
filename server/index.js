@@ -41,15 +41,16 @@ async function run() {
 
       // mailer
 
-      // const transporter = nodemailer.createTransport({
-      //   host: "smtp.ethereal.email",
-      //   port: 587,
-      //   secure: false, // true for port 465, false for other ports
-      //   auth: {
-      //     user: process.env.mail,
-      //     pass: process.env.verfyPassword,
-      //   },
-      // });
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "saef.ratul@gmail.com",
+          pass: "xnou oveh ebyq bskt",
+        },
+      });
   
       app.post('/api/v1/register', async (req, res) => {
         const { name, email, password } = req.body
@@ -74,6 +75,22 @@ async function run() {
           isVerified: false
         }
       
+
+        const mailOptions = {
+          from: "admin@gmail.com",
+          to: email,
+          subject: "Send Otp",
+          text: otp,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error("Error sending email: ", error);
+          } else {
+            console.log("Email sent: ", info.response);
+          }
+        });
+
         await usersCollection.insertOne(user);
         console.log(user);
         res.status(200).send({
@@ -83,6 +100,7 @@ async function run() {
   
   
       app.post("/api/v1/login", async (req, res) => {
+      try {
         const { email, password } = req.body;
   
         const user = await usersCollection.findOne({ email: email });
@@ -105,6 +123,9 @@ async function run() {
         );
   
         res.json({ status: true, token });
+      } catch (error) {
+        res.json(error)
+      }
       });
  
 
