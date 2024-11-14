@@ -2,26 +2,32 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { useLoginUserMutation } from '../../features/Auth/AuthApi';
+import { login } from '../../features/Auth/authSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const dispatch=useDispatch()
   const navigate=useNavigate()
+  const [loginUser]=useLoginUserMutation()
   const onSubmit = async(data) => {
   const user={
     email:data.email,
     password:data.password
   }
   try {
-    const res=await axios.post('http://localhost:3000/api/v1/login',user)
+    const res=await loginUser(user)
     if (res.data.status===true) {
      alert('login success')
-     localStorage.setItem('user token',res.data.token)
+    dispatch(login(res.data.token))
      navigate('/')
-    }else{
-     alert(res.data.message)
+    }else {
+      alert('Invalid credentials'); // Updated alert message
+      console.log('Invalid credentials');
     }
    } catch (error) {
-     console.log('error :>> ', error);
+     console.log('error', error);
    }
   };
 

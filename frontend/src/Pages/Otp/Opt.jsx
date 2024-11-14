@@ -2,9 +2,11 @@ import axios from 'axios';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useOtpVerifyedMutation } from '../../features/Auth/AuthApi';
 
 const OtpVerification = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [verification,{isLoading}]=useOtpVerifyedMutation()
    const {email}=useParams()
   const navigate=useNavigate()
   const onSubmit =async (data) => {
@@ -13,7 +15,7 @@ const OtpVerification = () => {
     otp: data.otp
    }
    try {
-    const res=await axios.post('http://localhost:3000/api/v1/verify-otp',otp)
+    const res=await verification(otp)
     if (res.data.message==='User verified successfully') {
      alert(res.data.message)
      navigate(`/login`)

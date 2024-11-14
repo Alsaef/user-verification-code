@@ -2,9 +2,11 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { useCreateAccountMutation } from '../../features/Auth/AuthApi';
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate=useNavigate()
+  const [createAccount,{isLoading,isError}]=useCreateAccountMutation()
   const onSubmit =async (data) => {
     const user = {
       name: data.name,
@@ -12,7 +14,7 @@ const Register = () => {
       password: data.password,
     }
     try {
-     const res=await axios.post('http://localhost:3000/api/v1/register',user)
+   const res= await createAccount(user)
      if (res.data.status===true) {
       alert('registation success')
       navigate(`/otp/${data.email}`)
