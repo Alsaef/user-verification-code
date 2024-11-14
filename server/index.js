@@ -106,15 +106,15 @@ async function run() {
         const user = await usersCollection.findOne({ email: email });
   
         if (!user) {
-          return res.status(401).json({ message: "Invalid email" });
+          return res.status(401).send({ message: "Invalid email" });
         }
         if (user.isVerified===false) {
-          return res.status(401).json({ message: "Invalid User" });
+          return res.status(401).send({ message: "Invalid User" });
         }
   
         const isPassword = await bcrypt.compare(password, user.password);
         if (!isPassword) {
-          return res.status(401).json({ message: "Invalid password" });
+          return res.status(401).send({ message: "Invalid password" });
         }
         const token = jwt.sign(
           { id: user._id, role: user.role, name: user.name, email: user.email},
@@ -122,9 +122,9 @@ async function run() {
           { expiresIn: '100d' }
         );
   
-        res.json({ status: true, token });
+        res.send({ status: true, token });
       } catch (error) {
-        res.json(error)
+        res.send(error)
       }
       });
  
